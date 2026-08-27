@@ -146,6 +146,19 @@ function AdSlot({ source, variant = 'standard' }) {
   );
 }
 
+function InPageAd() {
+  const adRef = useRef(null);
+  useEffect(() => {
+    injectAdScript(IN_PAGE_PUSH_SOURCE, adRef.current);
+  }, []);
+  return (
+    <div className="in-page-ad-anchor no-print" ref={adRef}>
+      <span className="ad-slot-label">Sponsored</span>
+      <span className="ad-slot-fallback">Advertisement</span>
+    </div>
+  );
+}
+
 function titleCase(value) {
   return value.replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
@@ -241,10 +254,6 @@ function App() {
   const difficulty = DIFFICULTIES[difficultyId];
   const activePuzzle = pages[activePage] || pages[0];
   const shownTopics = showAllTopics ? TOPICS : TOPICS.slice(0, 8);
-
-  useEffect(() => {
-    injectAdScript(IN_PAGE_PUSH_SOURCE, document.body);
-  }, []);
 
   useEffect(() => {
     const nextTitle = topic.label === 'Animals' ? 'Wild About Animals' : `${topic.label} Word Search`;
@@ -559,6 +568,7 @@ function App() {
         </section>
       </main>
 
+      <InPageAd />
       {showSaved && <div className="modal-backdrop no-print" onClick={() => setShowSaved(false)}><div className="saved-drawer" onClick={(event) => event.stopPropagation()}><div className="drawer-heading"><div><span className="section-kicker">YOUR PUZZLE SHELF</span><h2>Saved puzzles</h2></div><button className="close-button" onClick={() => setShowSaved(false)}><X size={20} /></button></div>{saved.length === 0 ? <div className="empty-shelf"><Bookmark size={28} /><strong>No saved puzzles yet</strong><p>Save a puzzle and it’ll show up here for easy printing later.</p></div> : <div className="saved-list">{saved.map((item) => <div className="saved-item" key={item.id}><div className="saved-thumb"><Grid2X2 size={20} /></div><div className="saved-info"><strong>{item.title}</strong><span>{TOPICS.find((topicItem) => topicItem.id === item.topicId)?.label} · {DIFFICULTIES[item.difficultyId].label} · {item.pageCount} {item.pageCount === 1 ? 'page' : 'pages'}</span><small>Saved {item.savedAt}</small></div><button className="load-button" onClick={() => loadSaved(item)}>Open</button><button className="delete-button" onClick={() => deleteSaved(item.id)} aria-label={`Delete ${item.title}`}><Trash2 size={15} /></button></div>)}</div>}</div></div>}
       {toast && <div className="toast"><Check size={16} /> {toast}</div>}
     </div>
