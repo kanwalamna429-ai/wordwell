@@ -19,7 +19,9 @@ import {
   Save,
   Settings2,
   Sparkles,
+  Sprout,
   Trash2,
+  WandSparkles,
   X
 } from 'lucide-react';
 import './styles.css';
@@ -111,6 +113,13 @@ const DIFFICULTIES = {
 const SEED_WORDS = Object.values(WORDS).flat().filter(Boolean);
 const UNIQUE_WORDS = [...new Set(SEED_WORDS)];
 const WORD_BANK_COUNT = UNIQUE_WORDS.length * 3;
+const TOPIC_ICONS = { garden: Sprout, fairy: WandSparkles };
+
+function TopicIcon({ topic, size = 15 }) {
+  const Icon = TOPIC_ICONS[topic.id];
+  if (Icon) return <Icon className="topic-vector-icon" size={size} strokeWidth={1.8} />;
+  return <span className="topic-icon">{topic.icon}</span>;
+}
 
 function titleCase(value) {
   return value.replace(/\b\w/g, (letter) => letter.toUpperCase());
@@ -317,7 +326,12 @@ function App() {
       puzzle.words.forEach((word, index) => {
         const column = index % columns;
         const row = Math.floor(index / columns);
-        doc.text(`□  ${titleCase(word)}`, margin + column * colWidth, startY + gridWidth + 25 + row * 6);
+        const x = margin + column * colWidth;
+        const y = startY + gridWidth + 25 + row * 6;
+        doc.setDrawColor(95, 95, 95);
+        doc.setLineWidth(0.35);
+        doc.rect(x, y - 2.5, 3.2, 3.2);
+        doc.text(titleCase(word), x + 5.5, y);
       });
       doc.setFontSize(8);
       doc.setTextColor(95, 95, 95);
@@ -427,7 +441,7 @@ function App() {
               <div className="topic-grid">
                 {shownTopics.map((item) => (
                   <button key={item.id} className={`topic-chip ${topicId === item.id ? 'selected' : ''}`} onClick={() => handleTopicChange(item.id)}>
-                    <span className="topic-icon">{item.icon}</span><span>{item.label}</span>{topicId === item.id && <Check size={14} />}
+                    <TopicIcon topic={item} /><span>{item.label}</span>{topicId === item.id && <Check size={14} />}
                   </button>
                 ))}
               </div>
@@ -483,9 +497,14 @@ function App() {
               </div>
             </div>
 
-            <div className="paper-stage">
+            <div className="print-only-pages">
+              {pages.map((puzzle, index) => <PrintablePuzzlePage key={`print-puzzle-${index}`} puzzle={puzzle} index={index} title={title} topic={topic} difficulty={difficulty} paperSize={paperSize} includeAnswers={includeAnswers} totalPages={pages.length} />)}
+              {includeAnswers && pages.map((puzzle, index) => <PrintableAnswerPage key={`print-answer-${index}`} puzzle={puzzle} index={index} title={title} topic={topic} />)}
+            </div>
+
+            <div className="paper-stage screen-preview">
               <div className="paper-header">
-                <div><span className="paper-topic">{topic.icon} {topic.label}</span><h2>{title || 'Untitled Word Search'}</h2></div>
+                <div><span className="paper-topic"><TopicIcon topic={topic} size={13} /> {topic.label}</span><h2>{title || 'Untitled Word Search'}</h2></div>
                 <div className="paper-meta"><span>{difficulty.label} · {activePuzzle?.size}×{activePuzzle?.size}</span><span>Page {activePage + 1} of {pages.length}</span></div>
               </div>
               <div className="puzzle-canvas">
@@ -513,6 +532,56 @@ function App() {
 
 function PuzzleGrid({ puzzle }) {
   return <div className="grid-wrap"><div className="puzzle-grid" style={{ '--grid-size': puzzle.size }}>{puzzle.grid.flatMap((row, rowIndex) => row.map((letter, columnIndex) => <span key={`${rowIndex}-${columnIndex}`}>{letter}</span>))}</div></div>;
+}
+
+function PrintablePuzzlePage({ puzzle, index, title, topic, difficulty, paperSize, includeAnswers, totalPages }) {
+  return (
+    <article className="print-page">
+      <div className="print-page-inner">
+        <div className="paper-header">
+          <div><span className="paper-topic"><TopicIcon topic={topic} size={13} /> {topic.label}</span><h2>{title || 'Untitled Word Search'}</h2></div>
+          <div className="paper-meta"><span>{difficulty.label} · {puzzle.size}×{puzzle.size}</span><span>Page {index + 1} of {totalPages}</span></div>
+        </div>
+        <div className="puzzle-canvas">
+          <PuzzleGrid puzzle={puzzle} />
+          <PrintableWordList puzzle={puzzle} />
+        </div>
+        <div className="paper-footer"><span>Created with Wordwell</span><span>{includeAnswers ? 'Answer key included' : 'Puzzle only'} · {paperSize === 'a4' ? 'A4' : 'US Letter'}</span></div>
+      </div>
+    </article>
+  );
+}
+
+function PrintableAnswerPage({ puzzle, index, title, topic }) {
+  return (
+    <article className="print-page">
+      <div className="print-page-inner answer-print-page">
+        <div className="paper-header">
+          <div><span className="paper-topic"><TopicIcon topic={topic} size={13} /> {topic.label}</span><h2>{title || 'Untitled Word Search'} · Answer Key</h2></div>
+          <div className="paper-meta"><span>Solutions</span><span>Puzzle {index + 1}</span></div>
+        </div>
+        <div className="puzzle-canvas"><AnswerGrid puzzle={puzzle} /></div>
+        <div className="paper-footer"><span>Answer key · Wordwell</span><span>Highlighted solutions</span></div>
+      </div>
+    </article>
+  );
+}
+
+function PrintableWordList({ puzzle }) {
+  return <div className="word-list"><div className="word-list-heading"><span>Find these words</span><span className="word-count">{puzzle.words.length} words</span></div><div className="words">{puzzle.words.map((word) => <span key={word}>{titleCase(word)}</span>)}</div></div>;
+}
+
+function AnswerGrid({ puzzle }) {
+  const highlightedCells = new Set();
+  puzzle.placements.forEach(({ start, end }) => {
+    const rowStep = Math.sign(end[0] - start[0]);
+    const columnStep = Math.sign(end[1] - start[1]);
+    const length = Math.max(Math.abs(end[0] - start[0]), Math.abs(end[1] - start[1]));
+    for (let index = 0; index <= length; index += 1) {
+      highlightedCells.add(`${start[0] + rowStep * index}-${start[1] + columnStep * index}`);
+    }
+  });
+  return <div className="grid-wrap"><div className="puzzle-grid answer-grid" style={{ '--grid-size': puzzle.size }}>{puzzle.grid.flatMap((row, rowIndex) => row.map((letter, columnIndex) => <span className={highlightedCells.has(`${rowIndex}-${columnIndex}`) ? 'highlighted' : ''} key={`${rowIndex}-${columnIndex}`}>{letter}</span>))}</div></div>;
 }
 
 createRoot(document.getElementById('root')).render(<App />);
