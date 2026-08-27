@@ -19,9 +19,7 @@ import {
   Save,
   Settings2,
   Sparkles,
-  Sprout,
   Trash2,
-  WandSparkles,
   X
 } from 'lucide-react';
 import './styles.css';
@@ -48,11 +46,11 @@ const TOPICS = [
   { id: 'spring', label: 'Spring', icon: '🌷', words: 'blooms, rain, renewal' },
   { id: 'summer', label: 'Summer', icon: '☀️', words: 'sun, beach, vacation' },
   { id: 'fall', label: 'Autumn', icon: '🍂', words: 'leaves, harvest, cozy days' },
-  { id: 'wellness', label: 'Health & Wellness', icon: '☁️', words: 'balance, movement, calm' },
+  { id: 'wellness', label: 'Health & Wellness', icon: '💚', words: 'balance, movement, calm' },
   { id: 'community', label: 'Community', icon: '🏘️', words: 'neighbors, places, kindness' },
-  { id: 'garden', label: 'Gardening', icon: '🪴', words: 'plants, soil, growing' },
+  { id: 'garden', label: 'Gardening', icon: '🌱', words: 'plants, soil, growing' },
   { id: 'dinosaurs', label: 'Dinosaurs', icon: '🦕', words: 'fossils, prehistoric, giants' },
-  { id: 'fairy', label: 'Fairy Tales', icon: '🪄', words: 'magic, castles, adventure' },
+  { id: 'fairy', label: 'Fairy Tales', icon: '✨', words: 'magic, castles, adventure' },
   { id: 'pirates', label: 'Pirates', icon: '⚓', words: 'treasure, ships, high seas' },
   { id: 'superheroes', label: 'Superheroes', icon: '⚡', words: 'brave, powers, justice' },
   { id: 'transport', label: 'Transportation', icon: '🚲', words: 'roads, vehicles, travel' },
@@ -61,7 +59,7 @@ const TOPICS = [
   { id: 'weather', label: 'Weather', icon: '☔', words: 'clouds, storms, seasons' },
   { id: 'colors', label: 'Colors & Shapes', icon: '🔷', words: 'bright, patterns, forms' },
   { id: 'feelings', label: 'Feelings & Emotions', icon: '💛', words: 'kindness, courage, joy' },
-  { id: 'mindfulness', label: 'Mindfulness', icon: '🫧', words: 'breathe, focus, peaceful' },
+  { id: 'mindfulness', label: 'Mindfulness', icon: '🧘', words: 'breathe, focus, peaceful' },
   { id: 'christmas', label: 'Christmas', icon: '🎄', words: 'winter, presents, traditions' }
 ];
 
@@ -113,11 +111,8 @@ const DIFFICULTIES = {
 const SEED_WORDS = Object.values(WORDS).flat().filter(Boolean);
 const UNIQUE_WORDS = [...new Set(SEED_WORDS)];
 const WORD_BANK_COUNT = UNIQUE_WORDS.length * 3;
-const TOPIC_ICONS = { garden: Sprout, fairy: WandSparkles };
 
 function TopicIcon({ topic, size = 15 }) {
-  const Icon = TOPIC_ICONS[topic.id];
-  if (Icon) return <Icon className="topic-vector-icon" size={size} strokeWidth={1.8} />;
   return <span className="topic-icon">{topic.icon}</span>;
 }
 

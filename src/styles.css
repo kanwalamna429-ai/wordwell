@@ -64,7 +64,6 @@ h1 em { color: #ea5b76; font-style: normal; }
 .topic-chip:hover { border-color: var(--ink); transform: translateY(-1px); }
 .topic-chip.selected { border: 1.5px solid var(--ink); background: var(--mint); color: var(--ink); font-weight: 700; box-shadow: 2px 2px 0 rgba(23,23,23,.15); }
 .topic-icon { font-size: 15px; }
-.topic-vector-icon { flex: none; color: currentColor; }
 .topic-chip svg { margin-left: auto; flex: none; }
 .show-more { display: flex; align-items: center; gap: 6px; margin: 11px auto 0; border: 0; background: none; color: #5d776e; font-size: 11px; cursor: pointer; }
 .show-more .flip { transform: rotate(180deg); }
@@ -197,6 +196,7 @@ h1 em { color: #ea5b76; font-style: normal; }
 
 @media print {
   @page { size: auto; margin: 12mm; }
+  html, body, #root, .app-shell { height: auto !important; min-height: 0 !important; overflow: visible !important; }
   body { background: white; }
   .no-print, .topbar, .intro, .control-panel, .preview-toolbar, .page-tabs, .tip-card, .toast { display: none !important; }
   .main-layout { width: 100%; margin: 0; padding: 0; }
@@ -204,9 +204,9 @@ h1 em { color: #ea5b76; font-style: normal; }
   .preview-area { width: 100%; }
   .screen-preview { display: none !important; }
   .print-only-pages { display: block !important; }
-  .print-page { width: 100%; min-height: 250mm; break-after: page; page-break-after: always; }
-  .print-page:last-child { break-after: auto; page-break-after: auto; }
-  .print-page-inner { min-height: 250mm; padding: 0 5mm; }
+  .print-page { width: 100%; min-height: 0; break-after: auto; page-break-after: auto; break-inside: avoid; page-break-inside: avoid; }
+  .print-page + .print-page { break-before: page; page-break-before: always; }
+  .print-page-inner { min-height: 0; padding: 0 5mm; }
   .print-page .paper-header { padding-top: 5mm; }
   .print-page .puzzle-canvas { padding-top: 9mm; }
   .print-page .puzzle-grid { width: min(160mm, 100%); }
