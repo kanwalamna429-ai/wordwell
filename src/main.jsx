@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { jsPDF } from 'jspdf';
 import {
@@ -111,9 +111,39 @@ const DIFFICULTIES = {
 const SEED_WORDS = Object.values(WORDS).flat().filter(Boolean);
 const UNIQUE_WORDS = [...new Set(SEED_WORDS)];
 const WORD_BANK_COUNT = UNIQUE_WORDS.length * 3;
+const DISPLAY_AD_SOURCES = [
+  'https://relieved-understanding.com/b/X/Vzs.ddG/ly0KYKWncd/ke/mf9fuVZSU_lfkYPIT-ctz/NQT/cD4dNMTGcItLNQzIMx1cNJzQgl2wMTQg',
+  'https://relieved-understanding.com/boXxV.sidyG/le0BYnW/ch/zeLmj9OurZDU-l_kuP/TacazGN/Tqcy4/NXzbM-tnNGzdMp1/NTzkgY3JNkwg'
+];
+const IN_PAGE_PUSH_SOURCE = 'https://relieved-understanding.com/bxXjV.sQdUGel/0OYOWVcu/JekmR9nuaZCUIlIk/PHTdcpzVNbTucn4RO/D/kHthN/z/M/1sNZzpgq5jMTwV';
+const VIDEO_SLIDER_SOURCE = 'https://relieved-understanding.com/bbXEVWsRd.Gulr0lYxWGcw/heUmJ9_uaZFUklhk/PXTIcczjN/TZcv5pMDDmUvtFN/zDM/1uNazOkCweOTQn';
 
 function TopicIcon({ topic, size = 15 }) {
   return <span className="topic-icon">{topic.icon}</span>;
+}
+
+function injectAdScript(source, target) {
+  if (!target || target.querySelector(`script[data-wordwell-ad="${source}"]`)) return;
+  const script = document.createElement('script');
+  script.dataset.wordwellAd = source;
+  script.settings = {};
+  script.src = source;
+  script.async = true;
+  script.referrerPolicy = 'no-referrer-when-downgrade';
+  target.appendChild(script);
+}
+
+function AdSlot({ source, variant = 'standard' }) {
+  const slotRef = useRef(null);
+  useEffect(() => {
+    injectAdScript(source, slotRef.current);
+  }, [source]);
+  return (
+    <div className={`ad-slot ${variant}`} ref={slotRef}>
+      <span className="ad-slot-label">Sponsored</span>
+      <span className="ad-slot-fallback">Advertisement</span>
+    </div>
+  );
 }
 
 function titleCase(value) {
@@ -211,6 +241,10 @@ function App() {
   const difficulty = DIFFICULTIES[difficultyId];
   const activePuzzle = pages[activePage] || pages[0];
   const shownTopics = showAllTopics ? TOPICS : TOPICS.slice(0, 8);
+
+  useEffect(() => {
+    injectAdScript(IN_PAGE_PUSH_SOURCE, document.body);
+  }, []);
 
   useEffect(() => {
     const nextTitle = topic.label === 'Animals' ? 'Wild About Animals' : `${topic.label} Word Search`;
@@ -515,6 +549,12 @@ function App() {
             {pages.length > 1 && <div className="page-tabs no-print"><button className="page-arrow" onClick={() => setActivePage((page) => Math.max(0, page - 1))} disabled={activePage === 0}>←</button>{pages.map((_, index) => <button key={index} className={activePage === index ? 'active' : ''} onClick={() => setActivePage(index)}>Page {String(index + 1).padStart(2, '0')}</button>)}<button className="page-arrow" onClick={() => setActivePage((page) => Math.min(pages.length - 1, page + 1))} disabled={activePage === pages.length - 1}>→</button></div>}
 
             <div className="tip-card no-print"><div className="tip-mark">✦</div><div><strong>Ready for the real world</strong><p>Print directly from this preview or download a PDF with crisp type, generous spacing, and an optional answer key.</p></div><FileText size={28} /></div>
+             <div className="ad-row no-print">
+               {DISPLAY_AD_SOURCES.map((source) => <AdSlot key={source} source={source} />)}
+             </div>
+             <div className="video-ad-wrap no-print">
+               <AdSlot source={VIDEO_SLIDER_SOURCE} variant="video" />
+             </div>
           </section>
         </section>
       </main>
