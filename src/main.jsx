@@ -138,12 +138,7 @@ function AdSlot({ source, variant = 'standard' }) {
   useEffect(() => {
     injectAdScript(source, slotRef.current);
   }, [source]);
-  return (
-    <div className={`ad-slot ${variant}`} ref={slotRef}>
-      <span className="ad-slot-label">Sponsored</span>
-      <span className="ad-slot-fallback">Advertisement</span>
-    </div>
-  );
+  return <div className={`ad-slot ${variant}`} ref={slotRef} aria-label="Advertisement" />;
 }
 
 function InPageAd() {
@@ -152,10 +147,7 @@ function InPageAd() {
     injectAdScript(IN_PAGE_PUSH_SOURCE, adRef.current);
   }, []);
   return (
-    <div className="in-page-ad-anchor no-print" ref={adRef}>
-      <span className="ad-slot-label">Sponsored</span>
-      <span className="ad-slot-fallback">Advertisement</span>
-    </div>
+    <div className="in-page-ad-anchor no-print" ref={adRef} aria-label="In-page advertisement" />
   );
 }
 

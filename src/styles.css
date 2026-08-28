@@ -132,14 +132,14 @@ h1 em { color: #ea5b76; font-style: normal; }
 .tip-card strong { font-family: 'Space Grotesk', sans-serif; font-size: 11px; }
 .tip-card p { margin-top: 3px; color: #777267; font-size: 10px; line-height: 1.4; }
 .tip-card > svg { margin-left: auto; color: #4ca993; }
-.ad-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 790px; margin: 14px auto 0; }
-.ad-slot { position: relative; display: flex; min-height: 90px; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(23,23,23,.14); border-radius: 9px; background: rgba(255,255,255,.45); color: #aaa398; }
-.ad-slot-label { position: absolute; top: 7px; left: 9px; color: #a29b8d; font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: .1em; text-transform: uppercase; }
-.ad-slot-fallback { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: .12em; text-transform: uppercase; }
-.video-ad-wrap { max-width: 790px; margin: 12px auto 0; }
-.ad-slot.video { min-height: 145px; background: rgba(255,255,255,.34); }
-.in-page-ad-anchor { position: fixed; z-index: 8; top: 82px; right: 18px; display: flex; min-height: 90px; width: min(320px, calc(100vw - 36px)); align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(23,23,23,.18); border-radius: 9px; background: rgba(255,253,244,.96); box-shadow: 4px 5px 0 rgba(23,23,23,.12); color: #aaa398; }
-.in-page-ad-anchor .ad-slot-label { top: 7px; left: 9px; }
+.ad-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 790px; margin: 14px auto 0; }
+.ad-slot { position: relative; display: block; width: 100%; min-height: 90px; }
+.ad-slot.video { min-height: 260px; }
+.ad-slot.video video, .ad-slot.video iframe { display: block; width: 100% !important; max-width: 100% !important; height: auto !important; min-height: 220px; border: 0 !important; }
+.ad-slot.video > * { position: relative !important; inset: auto !important; display: block !important; width: 100% !important; max-width: 100% !important; min-width: 0 !important; height: auto !important; max-height: 420px !important; margin: 0 !important; transform: none !important; }
+.video-ad-wrap { width: 100%; max-width: 790px; margin: 22px auto 0; }
+.in-page-ad-anchor { position: fixed; z-index: 8; top: 82px; right: 18px; width: min(320px, calc(100vw - 36px)); min-height: 0; pointer-events: none; }
+.in-page-ad-anchor > * { pointer-events: auto; }
 
 .modal-backdrop { position: fixed; z-index: 10; inset: 0; display: flex; justify-content: flex-end; background: rgba(23,23,23,.3); backdrop-filter: blur(3px); }
 .saved-drawer { width: min(520px, 94vw); height: 100%; overflow-y: auto; padding: 34px; border-left: 1px solid var(--ink); background: #fffdf4; box-shadow: -10px 0 30px rgba(23,23,23,.12); }
